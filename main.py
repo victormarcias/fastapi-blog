@@ -14,16 +14,23 @@ posts: list[dict] = [
     {
         "id": 1,
         "author": "Victor Marcias",
-        "title": "FastAPI is Awesome",
-        "content": "This framework is really easy to use and super fast.",
-        "date_posted": "April 20, 2025",
+        "title": "Aguante FastAPI",
+        "content": "Apretás TAB en VSCode y te autocompleta todo, es una locura.",
+        "date_posted": "Jul 8, 2026",
     },
     {
         "id": 2,
-        "author": "Jane Doe",
-        "title": "Python is Great for Web Development",
-        "content": "Python is a great language for web development, and FastAPI makes it even better.",
-        "date_posted": "April 21, 2025",
+        "author": "Juana María",
+        "title": "Python es genial para desarrollo web",
+        "content": "Python es genial para desarrollo web, y FastAPI es un gran ejemplo de ello.",
+        "date_posted": "July 8, 2026",
+    },
+    {
+        "id": 3,
+        "author": "Juan Pablo Folk",
+        "title": "Folco programa en C++",
+        "content": "Gana una fortuna imprimiendo logos en gorras cabeza.",
+        "date_posted": "July 8, 2026",
     },
 ]
 
