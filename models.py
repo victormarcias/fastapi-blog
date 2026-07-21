@@ -8,7 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
 
-
+## USER MODEL
 class User(Base):
     __tablename__ = "users"
 
@@ -21,7 +21,10 @@ class User(Base):
         default=None,
     )
 
-    posts: Mapped[list[Post]] = relationship(back_populates="author")
+    posts: Mapped[list[Post]] = relationship(
+        back_populates="author",
+        cascade="all, delete-orphan"
+    )
 
     @property
     def image_path(self) -> str:
@@ -29,7 +32,7 @@ class User(Base):
             return f"/media/profile_pics/{self.image_file}"
         return "/static/profile_pics/default.jpg"
 
-
+## POST MODEL
 class Post(Base):
     __tablename__ = "posts"
 
