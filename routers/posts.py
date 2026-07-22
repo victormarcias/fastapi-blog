@@ -20,6 +20,7 @@ async def get_posts(db: Annotated[AsyncSession, Depends(get_db)]):
     result = await db.execute(
         select(models.Post)
         .options(selectinload(models.Post.author))
+        .order_by(models.Post.date_posted.desc())
     )
     posts = result.scalars().all()
     return posts
@@ -113,7 +114,7 @@ async def update_post_full(
 )
 async def update_post_partial(
     post_id: int, 
-    post_data: PostCreate, 
+    post_data: PostUpdate, 
     db: Annotated[AsyncSession, Depends(get_db)]
 ):
     result = await db.execute(
