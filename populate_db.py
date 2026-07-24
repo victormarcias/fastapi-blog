@@ -8,15 +8,15 @@ from sqlalchemy import delete, select, update
 import models
 from models import Base
 from database import AsyncSessionLocal, engine
-from image_utils import PROFILE_PICS_DIR
 from main import app
 
+PROFILE_PICS_DIR = Path("media/profile_pics")
 POPULATE_IMAGES_DIR = Path("mocks/populate_images")
 
 USERS = [
     {
         "username": "Wolverine",
-        "email": "tonymontana@test.com",
+        "email": "wolverine@test.com",
         "password": "Password1!",
         "image": "wolverine.jpg",
     },
@@ -27,7 +27,7 @@ USERS = [
     },
     {
         "username": "Ñoño",
-        "email": "ellenripley@nostromo.com",
+        "email": "thanos@bunny.com",
         "password": "Password1!",
         "image": "thanos-bunny.jpg",
     },
@@ -39,7 +39,7 @@ USERS = [
     },
     {
         "username": "DocEmmettBrown",
-        "email": "docbrown@hillvalley.com",
+        "email": "docbrown@test.com",
         "password": "Password1!",
         "image": "emmett-brown.jpg",
     },
