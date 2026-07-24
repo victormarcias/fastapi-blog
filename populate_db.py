@@ -10,7 +10,6 @@ from models import Base
 from database import AsyncSessionLocal, engine
 from main import app
 
-PROFILE_PICS_DIR = Path("media/profile_pics")
 POPULATE_IMAGES_DIR = Path("mocks/populate_images")
 
 USERS = [
@@ -234,13 +233,6 @@ POST_44 = {
 #
 #
 async def clear_existing_data() -> None:
-    # Delete profile pictures from local storage
-    if PROFILE_PICS_DIR.exists():
-        for file in PROFILE_PICS_DIR.iterdir():
-            if file.is_file() and file.name != ".gitkeep":
-                file.unlink()
-        print(f"Deleted profile pictures from {PROFILE_PICS_DIR}")
-
     # Clear database tables (order respects foreign keys)
     async with AsyncSessionLocal() as db:
         await db.execute(delete(models.PasswordResetToken))
