@@ -8,6 +8,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
 
+#
+#
 ## USER MODEL
 class User(Base):
     __tablename__ = "users"
@@ -37,7 +39,8 @@ class User(Base):
         if self.image_file:
             return f"/media/profile_pics/{self.image_file}"
         return "/static/profile_pics/default.jpg"
-
+#
+#
 ## POST MODEL
 class Post(Base):
     __tablename__ = "posts"
@@ -54,9 +57,10 @@ class Post(Base):
         DateTime(timezone=True),
         default=lambda: datetime.now(UTC),
     )
-
     author: Mapped[User] = relationship(back_populates="posts")
-    
+    likes: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+#
+#
 ### PASSWORD RESET
 class PasswordResetToken(Base):
     __tablename__ = "password_reset_tokens"
