@@ -6,6 +6,7 @@ import httpx
 from sqlalchemy import delete, select, update
 
 import models
+from models import Base
 from database import AsyncSessionLocal, engine
 from image_utils import PROFILE_PICS_DIR
 from main import app
@@ -230,8 +231,8 @@ POST_44 = {
     "title": "Fun Fact: My High School Football Number Was #44",
     "content": "If you've paginated all the way to this post, the 44th one... you get to learn this fun fact: that my high school football number was #44. Other notable absolute legends who wore number #44 include: Jerry West (NBA - Also fellow WV Native), Hank Aaron (MLB), and Floyd Little (NFL).",
 }
-
-
+#
+#
 async def clear_existing_data() -> None:
     # Delete profile pictures from local storage
     if PROFILE_PICS_DIR.exists():
@@ -242,12 +243,13 @@ async def clear_existing_data() -> None:
 
     # Clear database tables (order respects foreign keys)
     async with AsyncSessionLocal() as db:
+        await db.execute(delete(models.PasswordResetToken))
         await db.execute(delete(models.Post))
         await db.execute(delete(models.User))
         await db.commit()
     print("Cleared existing data")
-
-
+#
+#
 async def update_post_dates() -> None:
     now = datetime.now(UTC)
 
@@ -278,9 +280,13 @@ async def update_post_dates() -> None:
 
         await db.commit()
     print("Updated post dates")
-
-
+#
+#
 async def populate() -> None:
+    # simular el startup del host para que funcione el populate aunque no haya corrido antes
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    
     transport = httpx.ASGITransport(app=app)
 
     async with httpx.AsyncClient(
@@ -302,9 +308,6 @@ async def populate() -> None:
                     "password": user_data["password"],
                 },
             )
-            if not response.is_success:
-                print(f"Error creating user: {response.json()}")
-                
             response.raise_for_status()
             user = response.json()
             print(f"  Created: {user['username']}")
@@ -380,6 +383,7 @@ async def populate() -> None:
     print(f"  {len(POSTS) + 1} posts")
     print("  Profile pictures saved locally")
 
-
+#
+#
 if __name__ == "__main__":
     asyncio.run(populate())

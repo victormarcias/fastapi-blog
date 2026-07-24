@@ -67,7 +67,8 @@ async def post_page(request: Request, post_id: int, db: Annotated[AsyncSession, 
             {"post": post, "title": title},
         )
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
-
+#
+#
 ### USER{id} POSTS PAGE - PAGINATED
 @app.get("/users/{user_id}/posts", include_in_schema=False, name="user_posts")
 async def user_posts_page(
@@ -139,7 +140,8 @@ async def general_http_exception_handler(request: Request, exc: StarletteHTTPExc
         },
         status_code=exc.status_code,
     )
-
+#
+#
 ### VALIDATION EXCEPTION HANDLER
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -156,7 +158,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         },
         status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
     )
-
+#
+#
 ### HOME
 @app.get("/", include_in_schema=False, name="home")
 @app.get("/posts", include_in_schema=False, name="posts")
@@ -184,7 +187,8 @@ async def home(request: Request, db: Annotated[AsyncSession, Depends(get_db)]):
             "has_more": has_more,
         },
     )
-
+#
+#
 ### LOGIN
 @app.get("/login", include_in_schema=False)
 async def login_page(request: Request):
@@ -193,7 +197,8 @@ async def login_page(request: Request):
         "login.html",
         {"title": "Login"},
     )
-
+#
+#
 ### REGISTER
 @app.get("/register", include_in_schema=False)
 async def register_page(request: Request):
@@ -202,7 +207,8 @@ async def register_page(request: Request):
         "register.html",
         {"title": "Register"},
     )
-
+#
+#
 ### ACCOUNT
 @app.get("/account", include_in_schema=False)
 async def account_page(request: Request):
@@ -211,3 +217,25 @@ async def account_page(request: Request):
         "account.html",
         {"title": "Account"},
     )
+#
+#
+### FORGOT PASSWORD
+@app.get("/forgot-password", include_in_schema=False)
+async def forgot_password_page(request: Request):
+    return templates.TemplateResponse(
+        request,
+        "forgot_password.html",
+        {"title": "Forgot Password"},
+    )
+#
+#
+### RESET PASSWORD
+@app.get("/reset-password", include_in_schema=False)
+async def reset_password_page(request: Request):
+    response = templates.TemplateResponse(
+        request,
+        "reset_password.html",
+        {"title": "Reset Password"},
+    )
+    response.headers["Referrer-Policy"] = "no-referrer"
+    return response

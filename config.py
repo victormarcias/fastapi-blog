@@ -13,5 +13,17 @@ class Settings(BaseSettings):
     max_upload_size_bytes: int = 3 * 1024 * 1024
     posts_per_page: int = 10
     posts_per_user: int = 3
+    reset_token_expire_minutes: int = 60
     
+    ## Email Configuration Settings
+    mail_server: str = "localhost"
+    mail_port: int = 587
+    mail_username: str = ""
+    mail_password: SecretStr = SecretStr("")
+    mail_from: str = "noreply@example.com"
+    mail_use_tls: bool = True
+    
+    frontend_url: str = "http://localhost:8000"
+
+### SETTINGS __INIT__
 settings = Settings()
