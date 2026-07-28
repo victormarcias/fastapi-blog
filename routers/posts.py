@@ -137,7 +137,7 @@ async def update_post_partial(
     if post.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to delete this post",
+            detail="Not authorized to update this post",
         )
 
     updated_data = post_data.model_dump(exclude_unset=True)
