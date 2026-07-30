@@ -1,0 +1,28 @@
+[Unit]
+Description=FastAPI Blog Application
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+User=victormarcias
+Group=www-data
+WorkingDirectory=/var/www/fastapi-blog
+Environment="PATH=/var/www/fastapi-blog/.venv/bin"
+EnvironmentFile=/var/www/fastapi-blog/.env
+# Set --workers to your CPU core count. Check with: nproc
+# For async workers, use 1 worker per core (not the old 2*cores+1 formula)
+# --proxy-headers tells Uvicorn to trust X-Forwarded-* headers from nginx
+ExecStart=/var/www/fastapi-blog/.venv/bin/fastapi run \
+    --workers 1 \
+    --host 127.0.0.1 \
+    --port 8000 \
+    --proxy-headers
+Restart=always
+RestartSec=5
+
+# Note: Uvicorn only trusts forwarded headers from 127.0.0.1 by default.
+# Since nginx runs on the same server (localhost), this works. If nginx
+# were on a different server, you'd also need --forwarded-allow-ips="x.x.x.x"
+
+[Install]
+WantedBy=multi-user.target
