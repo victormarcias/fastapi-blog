@@ -370,55 +370,6 @@ standard = [
 ]
 
 [[package]]
-name = "fastapi-blog"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "aiosmtplib" },
-    { name = "aiosqlite" },
-    { name = "alembic" },
-    { name = "boto3" },
-    { name = "certifi" },
-    { name = "fastapi", extra = ["standard"] },
-    { name = "greenlet" },
-    { name = "pillow" },
-    { name = "psycopg", extra = ["binary"] },
-    { name = "pwdlib", extra = ["argon2"] },
-    { name = "pydantic-settings" },
-    { name = "pyjwt" },
-    { name = "sqlalchemy" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "moto", extra = ["s3"] },
-    { name = "pytest" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "aiosmtplib", specifier = ">=5.1.2" },
-    { name = "aiosqlite", specifier = ">=0.22.1" },
-    { name = "alembic", specifier = ">=1.18.5" },
-    { name = "boto3", specifier = ">=1.43.56" },
-    { name = "certifi", specifier = ">=2025.1.31" },
-    { name = "fastapi", extras = ["standard"], specifier = ">=0.139.0" },
-    { name = "greenlet", specifier = ">=3.5.3" },
-    { name = "pillow", specifier = ">=12.3.0" },
-    { name = "psycopg", extras = ["binary"], specifier = ">=3.3.4" },
-    { name = "pwdlib", extras = ["argon2"], specifier = ">=0.3.0" },
-    { name = "pydantic-settings", specifier = ">=2.14.2" },
-    { name = "pyjwt", specifier = ">=2.13.0" },
-    { name = "sqlalchemy", specifier = ">=2.0.51" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "moto", extras = ["s3"], specifier = ">=5.2.2" },
-    { name = "pytest", specifier = ">=9.1.1" },
-]
-
-[[package]]
 name = "fastapi-cli"
 version = "0.0.28"
 source = { registry = "https://pypi.org/simple" }
@@ -552,6 +503,55 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/01/ee/02a2c011bdab74c6fb3c75474d40b3052059d95df7e73351460c8588d963/h11-0.16.0.tar.gz", hash = "sha256:4e35b956cf45792e4caa5885e69fba00bdbc6ffafbfa020300e549b208ee5ff1", size = 101250, upload-time = "2025-04-24T03:35:25.427Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/04/4b/29cac41a4d98d144bf5f6d33995617b185d14b22401f75ca86f384e87ff1/h11-0.16.0-py3-none-any.whl", hash = "sha256:63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86", size = 37515, upload-time = "2025-04-24T03:35:24.344Z" },
+]
+
+[[package]]
+name = "hero-blog"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "aiosmtplib" },
+    { name = "aiosqlite" },
+    { name = "alembic" },
+    { name = "boto3" },
+    { name = "certifi" },
+    { name = "fastapi", extra = ["standard"] },
+    { name = "greenlet" },
+    { name = "pillow" },
+    { name = "psycopg", extra = ["binary"] },
+    { name = "pwdlib", extra = ["argon2"] },
+    { name = "pydantic-settings" },
+    { name = "pyjwt" },
+    { name = "sqlalchemy" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "moto", extra = ["s3"] },
+    { name = "pytest" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aiosmtplib", specifier = ">=5.1.2" },
+    { name = "aiosqlite", specifier = ">=0.22.1" },
+    { name = "alembic", specifier = ">=1.18.5" },
+    { name = "boto3", specifier = ">=1.43.56" },
+    { name = "certifi", specifier = ">=2025.1.31" },
+    { name = "fastapi", extras = ["standard"], specifier = ">=0.139.0" },
+    { name = "greenlet", specifier = ">=3.5.3" },
+    { name = "pillow", specifier = ">=12.3.0" },
+    { name = "psycopg", extras = ["binary"], specifier = ">=3.3.4" },
+    { name = "pwdlib", extras = ["argon2"], specifier = ">=0.3.0" },
+    { name = "pydantic-settings", specifier = ">=2.14.2" },
+    { name = "pyjwt", specifier = ">=2.13.0" },
+    { name = "sqlalchemy", specifier = ">=2.0.51" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "moto", extras = ["s3"], specifier = ">=5.2.2" },
+    { name = "pytest", specifier = ">=9.1.1" },
 ]
 
 [[package]]

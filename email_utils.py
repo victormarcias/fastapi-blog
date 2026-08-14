@@ -14,6 +14,7 @@ _tls_context = ssl.create_default_context(cafile=certifi.where())
 ## __init__
 templates = Jinja2Templates(directory="templates")
 
+
 ### SEND EMAIL
 async def send_email(
     to_email: str,
@@ -38,9 +39,10 @@ async def send_email(
         username=settings.mail_username if settings.mail_username else None,
         password=settings.mail_password.get_secret_value() or None,
         start_tls=settings.mail_use_tls,
-        tls_context=_tls_context, # missing from CoreyMS # MAIL_USE_TLS=False
+        tls_context=_tls_context,  # missing from CoreyMS # MAIL_USE_TLS=False
     )
-    
+
+
 ### RESET EMAIL
 async def send_password_reset_email(to_email: str, username: str, token: str) -> None:
     reset_url = f"{settings.frontend_url}/reset-password?token={token}"
@@ -54,18 +56,17 @@ You requested to reset your password. Click the link below to set a new password
 
 {reset_url}
 
-This link will expire in {settings.reset_token_expire_minutes/60} hour.
+This link will expire in {settings.reset_token_expire_minutes / 60} hour.
 
 If you didn't request this, you can safely ignore this email.
 
 Best regards,
-The FastAPI Blog Team
+The Hero Blog Team
 """
 
     await send_email(
         to_email=to_email,
-        subject="Reset Your Password - FastAPI Blog",
+        subject="Reset Your Password - Hero Blog",
         plain_text=plain_text,
         html_content=html_content,
     )
-

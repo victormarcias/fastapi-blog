@@ -8,7 +8,7 @@ from tests.conftest import auth_header, create_test_user, login_user
 
 @pytest.mark.anyio
 async def test_get_posts_empty(client: AsyncClient):
-    response = await client.get(f"{settings.base_path}/api/posts")
+    response = await client.get(f"{settings.project_name}/api/posts")
 
     assert response.status_code == 200
     data = response.json()
@@ -19,7 +19,7 @@ async def test_get_posts_empty(client: AsyncClient):
 
 @pytest.mark.anyio
 async def test_get_post_not_found(client: AsyncClient):
-    response = await client.get(f"{settings.base_path}/api/posts/9999")
+    response = await client.get(f"{settings.project_name}/api/posts/9999")
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Post not found"
@@ -33,7 +33,7 @@ async def test_create_post_success(client: AsyncClient):
     headers = auth_header(token)
 
     response = await client.post(
-        f"{settings.base_path}/api/posts",
+        f"{settings.project_name}/api/posts",
         json={"title": "My First Post", "content": "This is the content"},
         headers=headers,
     )
@@ -52,7 +52,7 @@ async def test_create_post_success(client: AsyncClient):
 @pytest.mark.anyio
 async def test_create_post_unauthorized(client: AsyncClient):
     response = await client.post(
-        f"{settings.base_path}/api/posts",
+        f"{settings.project_name}/api/posts",
         json={"title": "Test Post", "content": "Test content"},
     )
 
@@ -68,14 +68,14 @@ async def test_update_post_success(client: AsyncClient):
     headers = auth_header(token)
 
     response = await client.post(
-        f"{settings.base_path}/api/posts",
+        f"{settings.project_name}/api/posts",
         json={"title": "Original Title", "content": "Original content"},
         headers=headers,
     )
     post_id = response.json()["id"]
 
     response = await client.patch(
-        f"{settings.base_path}/api/posts/{post_id}",
+        f"{settings.project_name}/api/posts/{post_id}",
         json={"title": "Updated Title"},
         headers=headers,
     )
@@ -93,7 +93,7 @@ async def test_update_post_wrong_user(client: AsyncClient):
     token1 = await login_user(client, email="user1@example.com")
 
     response = await client.post(
-        f"{settings.base_path}/api/posts",
+        f"{settings.project_name}/api/posts",
         json={"title": "User 1's Post", "content": "Only user 1 can edit this"},
         headers=auth_header(token1),
     )
@@ -103,7 +103,7 @@ async def test_update_post_wrong_user(client: AsyncClient):
     token2 = await login_user(client, email="user2@example.com")
 
     response = await client.patch(
-        f"{settings.base_path}/api/posts/{post_id}",
+        f"{settings.project_name}/api/posts/{post_id}",
         json={"title": "Hacked Title"},
         headers=auth_header(token2),
     )
@@ -121,27 +121,27 @@ async def test_get_posts_with_pagination(client: AsyncClient):
 
     for i in range(5):
         response = await client.post(
-            f"{settings.base_path}/api/posts",
+            f"{settings.project_name}/api/posts",
             json={"title": f"Post {i}", "content": f"Content for post {i}"},
             headers=headers,
         )
         assert response.status_code == 201
 
-    response = await client.get(f"{settings.base_path}/api/posts")
+    response = await client.get(f"{settings.project_name}/api/posts")
     assert response.status_code == 200
     data = response.json()
     assert data["total"] == 5
     assert len(data["posts"]) == 5
     assert data["has_more"] is False
 
-    response = await client.get(f"{settings.base_path}/api/posts?limit=2")
+    response = await client.get(f"{settings.project_name}/api/posts?limit=2")
     assert response.status_code == 200
     data = response.json()
     assert data["total"] == 5
     assert len(data["posts"]) == 2
     assert data["has_more"] is True
 
-    response = await client.get(f"{settings.base_path}/api/posts?skip=2&limit=2")
+    response = await client.get(f"{settings.project_name}/api/posts?skip=2&limit=2")
     assert response.status_code == 200
     data = response.json()
     assert data["total"] == 5

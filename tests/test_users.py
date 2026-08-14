@@ -14,7 +14,7 @@ from tests.conftest import auth_header, create_test_user, login_user
 @pytest.mark.anyio
 async def test_create_user_validation_error(client: AsyncClient):
     response = await client.post(
-        f"{settings.base_path}/api/users",
+        f"{settings.project_name}/api/users",
         json={
             "username": "testuser",
         },
@@ -31,7 +31,7 @@ async def test_create_user_duplicate_email(client: AsyncClient):
     await create_test_user(client)
 
     response = await client.post(
-        f"{settings.base_path}/api/users",
+        f"{settings.project_name}/api/users",
         json={
             "username": "different_user",
             "email": "test@example.com",
@@ -47,7 +47,7 @@ async def test_create_user_duplicate_email(client: AsyncClient):
 @pytest.mark.anyio
 async def test_create_user_success(client: AsyncClient):
     response = await client.post(
-        f"{settings.base_path}/api/users",
+        f"{settings.project_name}/api/users",
         json={
             "username": "newuser",
             "email": "newuser@example.com",
@@ -75,7 +75,7 @@ async def test_upload_profile_picture(client: AsyncClient, mocked_aws):
     image_bytes = test_image_path.read_bytes()
 
     response = await client.patch(
-        f"{settings.base_path}/api/users/{user['id']}/picture",
+        f"{settings.project_name}/api/users/{user['id']}/picture",
         files={"file": ("profile.jpg", BytesIO(image_bytes), "image/jpeg")},
         headers=auth_header(token),
     )
@@ -102,7 +102,7 @@ async def test_forgot_password_sends_email(client: AsyncClient):
         new_callable=AsyncMock,
     ) as mock_send:
         response = await client.post(
-            f"{settings.base_path}/api/users/forgot-password",
+            f"{settings.project_name}/api/users/forgot-password",
             json={"email": "test@example.com"},
         )
 

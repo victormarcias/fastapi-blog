@@ -300,7 +300,7 @@ async def populate() -> None:
         print(f"\nCreating {len(USERS)} users...")
         for user_data in USERS:
             response = await client.post(
-                f"{settings.base_path}/api/users",
+                f"{settings.project_name}/api/users",
                 json={
                     "username": user_data["username"],
                     "email": user_data["email"],
@@ -312,7 +312,7 @@ async def populate() -> None:
             print(f"  Created: {user['username']}")
 
             response = await client.post(
-                f"{settings.base_path}/api/users/token",
+                f"{settings.project_name}/api/users/token",
                 data={
                     "username": user_data["email"],
                     "password": user_data["password"],
@@ -325,7 +325,7 @@ async def populate() -> None:
                 image_path = POPULATE_IMAGES_DIR / image_name
                 if image_path.exists():
                     response = await client.patch(
-                        f"{settings.base_path}/api/users/{user['id']}/picture",
+                        f"{settings.project_name}/api/users/{user['id']}/picture",
                         files={
                             "file": (
                                 image_name,
@@ -346,7 +346,7 @@ async def populate() -> None:
 
         # First create POST_44 (will become oldest after date update)
         response = await client.post(
-            f"{settings.base_path}/api/posts",
+            f"{settings.project_name}/api/posts",
             json={"title": POST_44["title"], "content": POST_44["content"]},
             headers={"Authorization": f"Bearer {users[0]['token']}"},
         )
@@ -357,7 +357,7 @@ async def populate() -> None:
         for i, post_data in enumerate(reversed(POSTS)):
             user = users[i % len(users)]
             response = await client.post(
-                f"{settings.base_path}/api/posts",
+                f"{settings.project_name}/api/posts",
                 json={
                     "title": post_data["title"],
                     "content": post_data["content"],

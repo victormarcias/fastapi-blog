@@ -53,4 +53,4 @@ gcloud run deploy "$SERVICE" --image "$IMAGE" --region "$REGION" --project "$PRO
 
 echo ""
 echo "Listo. App en producción:"
-echo "  https://victormarcias.online/fastapi-blog"
+echo "  https://victormarcias.online/hero-blog"

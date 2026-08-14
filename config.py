@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     database_url: str = ""
-    base_path: str = "/fastapi-blog"
+    project_name: str = "/hero-blog"
 
     secret_key: SecretStr
     algorithm: str = "HS256"

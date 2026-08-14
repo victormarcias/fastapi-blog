@@ -128,7 +128,7 @@ async def create_test_user(
     password: str = "testpassword123",
 ) -> dict:
     response = await client.post(
-        f"{settings.base_path}/api/users",
+        f"{settings.project_name}/api/users",
         json={
             "username": username,
             "email": email,
@@ -145,7 +145,7 @@ async def login_user(
     password: str = "testpassword123",
 ) -> str:
     response = await client.post(
-        f"{settings.base_path}/api/users/token",
+        f"{settings.project_name}/api/users/token",
         data={
             "username": email,
             "password": password,
@@ -167,7 +167,7 @@ async def test_create_post_success(client: AsyncClient):
     headers = auth_header(token)
 
     response = await client.post(
-        f"{settings.base_path}/api/posts",
+        f"{settings.project_name}/api/posts",
         json={"title": "My First Post", "content": "This is the content"},
         headers=headers,
     )

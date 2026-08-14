@@ -4,8 +4,8 @@
     <h2 class="mb-4">Account Settings</h2>
     <!-- Profile Info Section -->
     <div class="d-flex align-items-center mb-4">
-        <img id="profileImage" class="rounded-circle me-3" src="{{ base_path }}/static/profile_pics/default.jpg" alt="Profile picture"
-            width="100" height="100">
+        <img id="profileImage" class="rounded-circle me-3" src="{{ project_name }}/static/profile_pics/default.jpg"
+            alt="Profile picture" width="100" height="100">
         <div>
             <h5 id="displayUsername" class="mb-0"></h5>
             <p id="displayEmail" class="text-body-secondary mb-0"></p>
@@ -111,8 +111,8 @@
 
 {% block scripts %}
 <script type="module">
-    import { getCurrentUser, getToken, logout, clearUserCache } from '{{ base_path }}/static/js/auth.js';
-    import { getErrorMessage, showModal, hideModal } from '{{ base_path }}/static/js/utils.js';
+    import { getCurrentUser, getToken, logout, clearUserCache } from '{{ project_name }}/static/js/auth.js';
+    import { getErrorMessage, showModal, hideModal } from '{{ project_name }}/static/js/utils.js';
 
     let currentUserId = null;
 
@@ -122,7 +122,7 @@
 
         // Redirect to login if not authenticated
         if (!user) {
-            window.location.href = '{{ base_path }}/login';
+            window.location.href = '{{ project_name }}/login';
             return;
         }
 
@@ -167,7 +167,7 @@
 
         const token = getToken();
         if (!token) {
-            window.location.href = '{{ base_path }}/login';
+            window.location.href = '{{ project_name }}/login';
             return;
         }
 
@@ -175,7 +175,7 @@
         const userData = Object.fromEntries(formData.entries());
 
         try {
-            const response = await fetch(`{{ base_path }}/api/users/${currentUserId}`, {
+            const response = await fetch(`{{ project_name }}/api/users/${currentUserId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -185,7 +185,7 @@
             });
 
             if (response.status === 401) {
-                window.location.href = '{{ base_path }}/login';
+                window.location.href = '{{ project_name }}/login';
                 return;
             }
 
@@ -225,7 +225,7 @@
     uploadBtn.addEventListener('click', async () => {
         const token = getToken();
         if (!token) {
-            window.location.href = '{{ base_path }}/login';
+            window.location.href = '{{ project_name }}/login';
             return;
         }
 
@@ -242,7 +242,7 @@
         uploadBtn.textContent = 'Uploading...';
 
         try {
-            const response = await fetch(`{{ base_path }}/api/users/${currentUserId}/picture`, {
+            const response = await fetch(`{{ project_name }}/api/users/${currentUserId}/picture`, {
                 method: 'PATCH',
                 headers: {
                     // Don't set Content-Type — browser sets multipart boundary automatically
@@ -252,7 +252,7 @@
             });
 
             if (response.status === 401) {
-                window.location.href = '{{ base_path }}/login';
+                window.location.href = '{{ project_name }}/login';
                 return;
             }
 
@@ -298,12 +298,12 @@
     document.getElementById('confirmDeleteAccount').addEventListener('click', async () => {
         const token = getToken();
         if (!token) {
-            window.location.href = '{{ base_path }}/login';
+            window.location.href = '{{ project_name }}/login';
             return;
         }
 
         try {
-            const response = await fetch(`{{ base_path }}/api/users/${currentUserId}`, {
+            const response = await fetch(`{{ project_name }}/api/users/${currentUserId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -311,7 +311,7 @@
             });
 
             if (response.status === 401) {
-                window.location.href = '{{ base_path }}/login';
+                window.location.href = '{{ project_name }}/login';
                 return;
             }
 
@@ -326,7 +326,7 @@
             if (response.status === 204) {
                 // Account deleted successfully
                 localStorage.removeItem('access_token');
-                window.location.href = '{{ base_path }}/';
+                window.location.href = '{{ project_name }}/';
             } else {
                 const error = await response.json();
                 document.getElementById('errorMessage').textContent = getErrorMessage(error);
@@ -353,7 +353,7 @@
 
         const token = getToken();
         if (!token) {
-            window.location.href = '{{ base_path }}/login';
+            window.location.href = '{{ project_name }}/login';
             return;
         }
 
@@ -373,7 +373,7 @@
         changePasswordBtn.textContent = 'Changing...';
 
         try {
-            const response = await fetch('{{ base_path }}/api/users/me/password', {
+            const response = await fetch('{{ project_name }}/api/users/me/password', {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -386,7 +386,7 @@
             });
 
             if (response.status === 401) {
-                window.location.href = '{{ base_path }}/login';
+                window.location.href = '{{ project_name }}/login';
                 return;
             }
 

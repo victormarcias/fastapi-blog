@@ -33,24 +33,24 @@ async def lifespan(_app: FastAPI):
 ##
 app = FastAPI(
     lifespan=lifespan,
-    docs_url=settings.base_path + "/docs",
-    redoc_url=settings.base_path + "/redoc",
-    openapi_url=settings.base_path + "/openapi.json",
+    docs_url=settings.project_name + "/docs",
+    redoc_url=settings.project_name + "/redoc",
+    openapi_url=settings.project_name + "/openapi.json",
 )
 app.mount(
-    settings.base_path + "/static", StaticFiles(directory="static"), name="static"
+    settings.project_name + "/static", StaticFiles(directory="static"), name="static"
 )
 
 ##
 templates = Jinja2Templates(directory="templates")
-templates.env.globals["base_path"] = settings.base_path
+templates.env.globals["project_name"] = settings.project_name
 
 ##
 app.include_router(
-    users.router, prefix=settings.base_path + "/api/users", tags=["users"]
+    users.router, prefix=settings.project_name + "/api/users", tags=["users"]
 )
 app.include_router(
-    posts.router, prefix=settings.base_path + "/api/posts", tags=["posts"]
+    posts.router, prefix=settings.project_name + "/api/posts", tags=["posts"]
 )
 
 ###
@@ -59,7 +59,7 @@ app.include_router(
 
 
 ### POST PAGE
-@app.get(settings.base_path + "/posts/{post_id}", include_in_schema=False)
+@app.get(settings.project_name + "/posts/{post_id}", include_in_schema=False)
 async def post_page(
     request: Request, post_id: int, db: Annotated[AsyncSession, Depends(get_db)]
 ):
@@ -83,7 +83,7 @@ async def post_page(
 #
 ### USER{id} POSTS PAGE - PAGINATED
 @app.get(
-    settings.base_path + "/users/{user_id}/posts",
+    settings.project_name + "/users/{user_id}/posts",
     include_in_schema=False,
     name="user_posts",
 )
@@ -139,7 +139,7 @@ async def user_posts_page(
 ### EXCEPTION HANDLER
 @app.exception_handler(StarletteHTTPException)
 async def general_http_exception_handler(request: Request, exc: StarletteHTTPException):
-    if request.url.path.startswith(settings.base_path + "/api"):
+    if request.url.path.startswith(settings.project_name + "/api"):
         return await http_exception_handler(request, exc)
 
     message = (
@@ -159,7 +159,7 @@ async def general_http_exception_handler(request: Request, exc: StarletteHTTPExc
 ### VALIDATION EXCEPTION HANDLER
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    if request.url.path.startswith(settings.base_path + "/api"):
+    if request.url.path.startswith(settings.project_name + "/api"):
         return await request_validation_exception_handler(request, exc)
 
     return templates.TemplateResponse(
@@ -177,8 +177,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 #
 #
 ### HOME
-@app.get(settings.base_path + "/", include_in_schema=False, name="home")
-@app.get(settings.base_path + "/posts", include_in_schema=False, name="posts")
+@app.get(settings.project_name + "/", include_in_schema=False, name="home")
+@app.get(settings.project_name + "/posts", include_in_schema=False, name="posts")
 async def home(request: Request, db: Annotated[AsyncSession, Depends(get_db)]):
     count_result = await db.execute(select(func.count()).select_from(models.Post))
     total = count_result.scalar() or 0
@@ -208,7 +208,7 @@ async def home(request: Request, db: Annotated[AsyncSession, Depends(get_db)]):
 #
 #
 ### LOGIN
-@app.get(settings.base_path + "/login", include_in_schema=False)
+@app.get(settings.project_name + "/login", include_in_schema=False)
 async def login_page(request: Request):
     return templates.TemplateResponse(
         request,
@@ -220,7 +220,7 @@ async def login_page(request: Request):
 #
 #
 ### REGISTER
-@app.get(settings.base_path + "/register", include_in_schema=False)
+@app.get(settings.project_name + "/register", include_in_schema=False)
 async def register_page(request: Request):
     return templates.TemplateResponse(
         request,
@@ -232,7 +232,7 @@ async def register_page(request: Request):
 #
 #
 ### ACCOUNT
-@app.get(settings.base_path + "/account", include_in_schema=False)
+@app.get(settings.project_name + "/account", include_in_schema=False)
 async def account_page(request: Request):
     return templates.TemplateResponse(
         request,
@@ -244,7 +244,7 @@ async def account_page(request: Request):
 #
 #
 ### FORGOT PASSWORD
-@app.get(settings.base_path + "/forgot-password", include_in_schema=False)
+@app.get(settings.project_name + "/forgot-password", include_in_schema=False)
 async def forgot_password_page(request: Request):
     return templates.TemplateResponse(
         request,
@@ -256,7 +256,7 @@ async def forgot_password_page(request: Request):
 #
 #
 ### RESET PASSWORD
-@app.get(settings.base_path + "/reset-password", include_in_schema=False)
+@app.get(settings.project_name + "/reset-password", include_in_schema=False)
 async def reset_password_page(request: Request):
     response = templates.TemplateResponse(
         request,

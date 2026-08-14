@@ -1,7 +1,7 @@
 {
-  "name": "FastAPI Blog",
-  "short_name": "FastAPI Blog",
-  "description": "FastAPI Tutorial",
+  "name": "Hero Blog",
+  "short_name": "Hero Blog",
+  "description": "Hero Tutorial",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -8,6 +8,7 @@ from database import Base
 
 from config import settings
 
+
 #
 #
 ## USER MODEL
@@ -25,20 +26,21 @@ class User(Base):
     )
     # clear posts
     posts: Mapped[list[Post]] = relationship(
-        back_populates="author",
-        cascade="all, delete-orphan"
+        back_populates="author", cascade="all, delete-orphan"
     )
     # clear tokens
     reset_tokens: Mapped[list[PasswordResetToken]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan",
     )
-    
+
     @property
     def image_path(self) -> str:
         if self.image_file:
             return f"https://{settings.s3_bucket_name}.s3.{settings.s3_region}.amazonaws.com/profile_pics/{self.image_file}"
-        return settings.base_path + "/static/profile_pics/default.jpg"
+        return settings.project_name + "/static/profile_pics/default.jpg"
+
+
 #
 #
 ## POST MODEL
@@ -59,6 +61,8 @@ class Post(Base):
     )
     author: Mapped[User] = relationship(back_populates="posts")
     likes: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+
+
 #
 #
 ### PASSWORD RESET
