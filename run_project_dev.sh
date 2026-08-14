@@ -33,4 +33,4 @@ fi
 echo ""
 echo "Listo. API corriendo en:"
 echo "  http://localhost:8000/fastapi-blog"
-echo "  Docs (Swagger): http://localhost:8000/docs"
+echo "  Docs (Swagger): http://localhost:8000/fastapi-blog/docs"

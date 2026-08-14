@@ -4,7 +4,7 @@ from typing import Annotated
 
 from fastapi.exception_handlers import (
     http_exception_handler,
-    request_validation_exception_handler
+    request_validation_exception_handler,
 )
 
 from fastapi import FastAPI, Depends, HTTPException, status, Request
@@ -21,35 +21,48 @@ from config import settings
 from database import engine, get_db
 from routers import posts, users
 
-## 
+
+##
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    yield 
+    yield
     # Shutdown
     await engine.dispose()
 
-## 
-app = FastAPI(lifespan=lifespan)
-app.mount(settings.base_path + "/static", StaticFiles(directory="static"), name="static")
+
+##
+app = FastAPI(
+    lifespan=lifespan,
+    docs_url=settings.base_path + "/docs",
+    redoc_url=settings.base_path + "/redoc",
+    openapi_url=settings.base_path + "/openapi.json",
+)
+app.mount(
+    settings.base_path + "/static", StaticFiles(directory="static"), name="static"
+)
 
 ##
 templates = Jinja2Templates(directory="templates")
 templates.env.globals["base_path"] = settings.base_path
 
 ##
-app.include_router(users.router, prefix=settings.base_path + "/api/users", tags=["users"])
-app.include_router(posts.router, prefix=settings.base_path + "/api/posts", tags=["posts"])
+app.include_router(
+    users.router, prefix=settings.base_path + "/api/users", tags=["users"]
+)
+app.include_router(
+    posts.router, prefix=settings.base_path + "/api/posts", tags=["posts"]
+)
 
 ###
 ### Templates
 ###
 
+
 ### POST PAGE
-@app.get(
-    settings.base_path + "/posts/{post_id}",
-    include_in_schema=False
-)
-async def post_page(request: Request, post_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
+@app.get(settings.base_path + "/posts/{post_id}", include_in_schema=False)
+async def post_page(
+    request: Request, post_id: int, db: Annotated[AsyncSession, Depends(get_db)]
+):
     result = await db.execute(
         select(models.Post)
         .options(selectinload(models.Post.author))
@@ -64,10 +77,16 @@ async def post_page(request: Request, post_id: int, db: Annotated[AsyncSession, 
             {"post": post, "title": title},
         )
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+
+
 #
 #
 ### USER{id} POSTS PAGE - PAGINATED
-@app.get(settings.base_path + "/users/{user_id}/posts", include_in_schema=False, name="user_posts")
+@app.get(
+    settings.base_path + "/users/{user_id}/posts",
+    include_in_schema=False,
+    name="user_posts",
+)
 async def user_posts_page(
     request: Request,
     user_id: int,
@@ -111,32 +130,30 @@ async def user_posts_page(
         },
     )
 
+
 ###
 ### Error Handler
 ###
+
 
 ### EXCEPTION HANDLER
 @app.exception_handler(StarletteHTTPException)
 async def general_http_exception_handler(request: Request, exc: StarletteHTTPException):
     if request.url.path.startswith(settings.base_path + "/api"):
         return await http_exception_handler(request, exc)
-    
+
     message = (
-        exc.detail
-        if exc.detail
-        else "An error occurred while processing your request."
+        exc.detail if exc.detail else "An error occurred while processing your request."
     )
 
     return templates.TemplateResponse(
         request,
         "error.html",
-        {
-            "request": request, 
-            "status_code": exc.status_code, 
-            "detail": message
-        },
+        {"request": request, "status_code": exc.status_code, "detail": message},
         status_code=exc.status_code,
     )
+
+
 #
 #
 ### VALIDATION EXCEPTION HANDLER
@@ -144,17 +161,19 @@ async def general_http_exception_handler(request: Request, exc: StarletteHTTPExc
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     if request.url.path.startswith(settings.base_path + "/api"):
         return await request_validation_exception_handler(request, exc)
-    
+
     return templates.TemplateResponse(
         request,
         "error.html",
         {
-            "status_code": status.HTTP_422_UNPROCESSABLE_CONTENT, 
+            "status_code": status.HTTP_422_UNPROCESSABLE_CONTENT,
             "title": status.HTTP_422_UNPROCESSABLE_CONTENT,
             "message": "Invalid request data. Please check your input and try again.",
         },
         status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
     )
+
+
 #
 #
 ### HOME
@@ -184,6 +203,8 @@ async def home(request: Request, db: Annotated[AsyncSession, Depends(get_db)]):
             "has_more": has_more,
         },
     )
+
+
 #
 #
 ### LOGIN
@@ -194,6 +215,8 @@ async def login_page(request: Request):
         "login.html",
         {"title": "Login"},
     )
+
+
 #
 #
 ### REGISTER
@@ -204,6 +227,8 @@ async def register_page(request: Request):
         "register.html",
         {"title": "Register"},
     )
+
+
 #
 #
 ### ACCOUNT
@@ -214,6 +239,8 @@ async def account_page(request: Request):
         "account.html",
         {"title": "Account"},
     )
+
+
 #
 #
 ### FORGOT PASSWORD
@@ -224,6 +251,8 @@ async def forgot_password_page(request: Request):
         "forgot_password.html",
         {"title": "Forgot Password"},
     )
+
+
 #
 #
 ### RESET PASSWORD
@@ -236,8 +265,10 @@ async def reset_password_page(request: Request):
     )
     response.headers["Referrer-Policy"] = "no-referrer"
     return response
+
+
 #
-# 
+#
 ### HEALTH CHECK ENDPOINT
 @app.get("/status")
 async def health_check(db: Annotated[AsyncSession, Depends(get_db)]):
@@ -249,6 +280,8 @@ async def health_check(db: Annotated[AsyncSession, Depends(get_db)]):
             detail="Database unavailable",
         ) from exc
     return {"status": "healthy"}
+
+
 #
 #
 ### SECURITY HEADERS MIDDLEWARE
