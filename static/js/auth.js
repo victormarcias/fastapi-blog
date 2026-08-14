@@ -1,3 +1,5 @@
+const BASE_PATH = window.__BASE_PATH__ || "";
+
 let currentUser = null;
 let fetchPromise = null;
 
@@ -18,7 +20,7 @@ export async function getCurrentUser() {
 
     fetchPromise = (async () => {
         try {
-            const response = await fetch("/api/users/me", {
+            const response = await fetch(`${BASE_PATH}/api/users/me`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -45,7 +47,7 @@ export async function getCurrentUser() {
 export function logout() {
     localStorage.removeItem("access_token");
     currentUser = null;
-    window.location.href = "/";
+    window.location.href = `${BASE_PATH}/`;
 }
 
 export function getToken() {

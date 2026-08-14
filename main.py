@@ -30,14 +30,15 @@ async def lifespan(_app: FastAPI):
 
 ## 
 app = FastAPI(lifespan=lifespan)
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount(settings.base_path + "/static", StaticFiles(directory="static"), name="static")
 
 ##
 templates = Jinja2Templates(directory="templates")
+templates.env.globals["base_path"] = settings.base_path
 
 ##
-app.include_router(users.router, prefix="/api/users", tags=["users"])
-app.include_router(posts.router, prefix="/api/posts", tags=["posts"])
+app.include_router(users.router, prefix=settings.base_path + "/api/users", tags=["users"])
+app.include_router(posts.router, prefix=settings.base_path + "/api/posts", tags=["posts"])
 
 ###
 ### Templates
@@ -45,7 +46,7 @@ app.include_router(posts.router, prefix="/api/posts", tags=["posts"])
 
 ### POST PAGE
 @app.get(
-    "/posts/{post_id}", 
+    settings.base_path + "/posts/{post_id}",
     include_in_schema=False
 )
 async def post_page(request: Request, post_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
@@ -66,7 +67,7 @@ async def post_page(request: Request, post_id: int, db: Annotated[AsyncSession, 
 #
 #
 ### USER{id} POSTS PAGE - PAGINATED
-@app.get("/users/{user_id}/posts", include_in_schema=False, name="user_posts")
+@app.get(settings.base_path + "/users/{user_id}/posts", include_in_schema=False, name="user_posts")
 async def user_posts_page(
     request: Request,
     user_id: int,
@@ -157,8 +158,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 #
 #
 ### HOME
-@app.get("/", include_in_schema=False, name="home")
-@app.get("/posts", include_in_schema=False, name="posts")
+@app.get(settings.base_path + "/", include_in_schema=False, name="home")
+@app.get(settings.base_path + "/posts", include_in_schema=False, name="posts")
 async def home(request: Request, db: Annotated[AsyncSession, Depends(get_db)]):
     count_result = await db.execute(select(func.count()).select_from(models.Post))
     total = count_result.scalar() or 0
@@ -186,7 +187,7 @@ async def home(request: Request, db: Annotated[AsyncSession, Depends(get_db)]):
 #
 #
 ### LOGIN
-@app.get("/login", include_in_schema=False)
+@app.get(settings.base_path + "/login", include_in_schema=False)
 async def login_page(request: Request):
     return templates.TemplateResponse(
         request,
@@ -196,7 +197,7 @@ async def login_page(request: Request):
 #
 #
 ### REGISTER
-@app.get("/register", include_in_schema=False)
+@app.get(settings.base_path + "/register", include_in_schema=False)
 async def register_page(request: Request):
     return templates.TemplateResponse(
         request,
@@ -206,7 +207,7 @@ async def register_page(request: Request):
 #
 #
 ### ACCOUNT
-@app.get("/account", include_in_schema=False)
+@app.get(settings.base_path + "/account", include_in_schema=False)
 async def account_page(request: Request):
     return templates.TemplateResponse(
         request,
@@ -216,7 +217,7 @@ async def account_page(request: Request):
 #
 #
 ### FORGOT PASSWORD
-@app.get("/forgot-password", include_in_schema=False)
+@app.get(settings.base_path + "/forgot-password", include_in_schema=False)
 async def forgot_password_page(request: Request):
     return templates.TemplateResponse(
         request,
@@ -226,7 +227,7 @@ async def forgot_password_page(request: Request):
 #
 #
 ### RESET PASSWORD
-@app.get("/reset-password", include_in_schema=False)
+@app.get(settings.base_path + "/reset-password", include_in_schema=False)
 async def reset_password_page(request: Request):
     response = templates.TemplateResponse(
         request,

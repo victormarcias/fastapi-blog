@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Levantando la app (Docker)..."
+docker compose up -d --build
+
+echo "Aplicando migraciones..."
+docker compose exec -T app alembic upgrade head
+
+echo ""
+echo "Listo. API corriendo en:"
+echo "  http://localhost:8000/fastapi-blog"
+echo "  Docs (Swagger): http://localhost:8000/docs"
