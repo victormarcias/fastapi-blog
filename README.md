@@ -15,15 +15,15 @@ Live at: https://victormarcias.online/hero-blog
 - **Security**: security headers middleware (HSTS, X-Frame-Options, etc.), Argon2 password hashing
 - Dockerized with a multi-stage build, running as a non-root user
 - Separate environments: local Postgres for dev, [Neon](https://neon.tech) for prod
-- Automated test suite (pytest) that runs before every deploy
+- Automated test suite (pytest) that runs in Cloud Build before every deploy
 
 ## How to run
 
 ### Prerequisites
 
-- [Docker](https://www.docker.com/) — installed and **running** (Docker Desktop must be open) for local dev/tests
-- [uv](https://docs.astral.sh/uv/) — runs tests and Alembic locally
-- `gcloud` CLI, authenticated — only needed to deploy to production
+- [Docker](https://www.docker.com/) — installed and **running** (Docker Desktop must be open), only for local dev/tests
+- [uv](https://docs.astral.sh/uv/) — runs Alembic locally, and tests when run outside Cloud Build
+- `gcloud` CLI, authenticated — only needed to deploy to production (no Docker required — tests and the image build run in Cloud Build)
 
 ### Local development
 
@@ -53,4 +53,4 @@ Runs against an isolated local `test_blog` database.
 ./run_project_prod.sh --populate   # ...and seed prod with demo data
 ```
 
-Requires a clean working tree in sync with `origin/main`, and the `gcloud` CLI authenticated. Builds the image, pushes it to Artifact Registry, runs migrations against the production Neon database, then deploys to Cloud Run.
+Requires a clean working tree in sync with `origin/main`, and the `gcloud` CLI authenticated. Runs tests and builds the image in Cloud Build (`cloudbuild.yaml`, own ephemeral Postgres — no local Docker needed), pushes it to Artifact Registry, runs migrations against the production Neon database, then deploys to Cloud Run.

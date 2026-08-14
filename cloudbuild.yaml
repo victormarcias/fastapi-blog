@@ -1,0 +1,43 @@
+steps:
+  - id: start-test-db
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      - "run"
+      - "-d"
+      - "--network=cloudbuild"
+      - "--name=test-db"
+      - "-e"
+      - "POSTGRES_USER=bloguser"
+      - "-e"
+      - "POSTGRES_PASSWORD=blogpass"
+      - "-e"
+      - "POSTGRES_DB=test_blog"
+      - "postgres:16-alpine"
+
+  - id: wait-test-db
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      - "exec"
+      - "test-db"
+      - "sh"
+      - "-c"
+      - "until pg_isready -U bloguser -d test_blog; do sleep 1; done"
+
+  - id: run-tests
+    name: "python:3.14-slim-bookworm"
+    entrypoint: bash
+    args:
+      - "-c"
+      - |
+        pip install --no-cache-dir uv==0.11.6
+        uv sync --locked
+        uv run pytest
+    env:
+      - "DATABASE_URL=postgresql+psycopg://bloguser:blogpass@test-db/test_blog"
+
+  - id: build-image
+    name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "${_IMAGE}", "."]
+
+images:
+  - "${_IMAGE}"

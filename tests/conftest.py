@@ -1,8 +1,9 @@
 import os
 from collections.abc import AsyncGenerator
 
-os.environ["DATABASE_URL"] = (
-    "postgresql+psycopg://bloguser:blogpass@localhost/test_blog"
+os.environ.setdefault(
+    "DATABASE_URL",
+    "postgresql+psycopg://bloguser:blogpass@localhost/test_blog",
 )
 os.environ["S3_BUCKET_NAME"] = "test-bucket"
 os.environ["SECRET_KEY"] = "test-secret-key-for-testing-only"

@@ -30,11 +30,8 @@ if [ "$(git rev-parse @)" != "$(git rev-parse @{u})" ]; then
   exit 1
 fi
 
-echo "Corriendo tests..."
-./run_tests.sh
-
-echo "Buildeando y subiendo la imagen..."
-gcloud builds submit --tag "$IMAGE" --project "$PROJECT_ID"
+echo "Corriendo tests y buildeando la imagen en Cloud Build..."
+gcloud builds submit --config cloudbuild.yaml --substitutions=_IMAGE="$IMAGE" --project "$PROJECT_ID"
 
 echo "Leyendo DATABASE_URL de prod desde Cloud Run..."
 PROD_DATABASE_URL=$(gcloud run services describe "$SERVICE" --region "$REGION" --project "$PROJECT_ID" --format=json \
