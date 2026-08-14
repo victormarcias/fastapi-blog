@@ -6,7 +6,7 @@ from config import settings
 # SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./blog.db"
 
 ### DATABASE __INIT__
-engine = create_async_engine(settings.database_url)
+engine = create_async_engine(settings.database_url, pool_pre_ping=True)
 
 ### DATABASE SESION __INIT__
 AsyncSessionLocal = async_sessionmaker(
