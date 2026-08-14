@@ -6,6 +6,18 @@ REGION="us-east4"
 SERVICE="fastapi-service"
 IMAGE="us-east4-docker.pkg.dev/${PROJECT_ID}/fastapi-repo/fastapi-app"
 
+RUN_POPULATE=false
+
+for arg in "$@"; do
+  case "$arg" in
+    --populate) RUN_POPULATE=true ;;
+    *)
+      echo "Uso: $0 [--populate]"
+      exit 1
+      ;;
+  esac
+done
+
 echo "Verificando estado del repo..."
 if [ -n "$(git status --porcelain)" ]; then
   echo "Hay cambios sin commitear. Commiteá o descartá antes de deployar a prod."
@@ -30,6 +42,11 @@ PROD_DATABASE_URL=$(gcloud run services describe "$SERVICE" --region "$REGION" -
 
 echo "Aplicando migraciones contra Neon (prod)..."
 DATABASE_URL="$PROD_DATABASE_URL" uv run alembic upgrade head
+
+if [ "$RUN_POPULATE" = true ]; then
+  echo "Poblando la base de datos de prod (Neon)..."
+  DATABASE_URL="$PROD_DATABASE_URL" uv run python populate_db.py
+fi
 
 echo "Deployando a Cloud Run..."
 gcloud run deploy "$SERVICE" --image "$IMAGE" --region "$REGION" --project "$PROJECT_ID"
