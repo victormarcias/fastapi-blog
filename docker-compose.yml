@@ -1,7 +1,32 @@
 services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: bloguser
+      POSTGRES_PASSWORD: blogpass
+      POSTGRES_DB: blog
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U bloguser -d blog" ]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
   app:
     build: .
     env_file:
       - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://bloguser:blogpass@db:5432/blog
+    depends_on:
+      db:
+        condition: service_healthy
     ports:
       - "8000:8080"
+
+volumes:
+  pgdata:

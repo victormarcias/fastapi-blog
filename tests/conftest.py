@@ -1,4 +1,3 @@
-
 import os
 from collections.abc import AsyncGenerator
 
@@ -25,18 +24,22 @@ from moto import mock_aws
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 
+from config import settings
 from database import Base, get_db
 from main import app
 
 pytest_plugins = ["anyio"]
 
+
 @pytest.fixture(scope="session")
 def anyio_backend():
     return "asyncio"
 
+
 #
 ### SESSION SETUP
 #
+
 
 ## Test Engine
 @pytest.fixture(scope="session")
@@ -46,6 +49,7 @@ def test_engine():
         poolclass=NullPool,
     )
     return engine
+
 
 ## Setup Database
 @pytest.fixture(scope="session")
@@ -59,6 +63,7 @@ async def setup_database(test_engine):
         await conn.run_sync(Base.metadata.drop_all)
 
     await test_engine.dispose()
+
 
 ## db Session (Transactional Rollback)
 @pytest.fixture
@@ -84,6 +89,7 @@ async def db_session(
             await trans.rollback()
             await conn.close()
 
+
 ## Mocked AWS
 @pytest.fixture
 def mocked_aws():
@@ -91,6 +97,7 @@ def mocked_aws():
         s3 = boto3.client("s3", region_name="us-east-1")
         s3.create_bucket(Bucket=os.environ["S3_BUCKET_NAME"])
         yield s3
+
 
 ## Client Fixture
 @pytest.fixture
@@ -112,6 +119,7 @@ async def client(
 
     app.dependency_overrides.clear()
 
+
 ## Auth Helpers
 async def create_test_user(
     client: AsyncClient,
@@ -120,7 +128,7 @@ async def create_test_user(
     password: str = "testpassword123",
 ) -> dict:
     response = await client.post(
-        "/api/users",
+        f"{settings.base_path}/api/users",
         json={
             "username": username,
             "email": email,
@@ -130,13 +138,14 @@ async def create_test_user(
     assert response.status_code == 201, f"Failed to create user: {response.text}"
     return response.json()
 
+
 async def login_user(
     client: AsyncClient,
     email: str = "test@example.com",
     password: str = "testpassword123",
 ) -> str:
     response = await client.post(
-        "/api/users/token",
+        f"{settings.base_path}/api/users/token",
         data={
             "username": email,
             "password": password,
@@ -145,8 +154,10 @@ async def login_user(
     assert response.status_code == 200, f"Failed to login: {response.text}"
     return response.json()["access_token"]
 
+
 def auth_header(token: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {token}"}
+
 
 ## Test Create Post Success
 @pytest.mark.anyio
@@ -156,7 +167,7 @@ async def test_create_post_success(client: AsyncClient):
     headers = auth_header(token)
 
     response = await client.post(
-        "/api/posts",
+        f"{settings.base_path}/api/posts",
         json={"title": "My First Post", "content": "This is the content"},
         headers=headers,
     )

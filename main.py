@@ -118,7 +118,7 @@ async def user_posts_page(
 ### EXCEPTION HANDLER
 @app.exception_handler(StarletteHTTPException)
 async def general_http_exception_handler(request: Request, exc: StarletteHTTPException):
-    if request.url.path.startswith("/api"):
+    if request.url.path.startswith(settings.base_path + "/api"):
         return await http_exception_handler(request, exc)
     
     message = (
@@ -142,7 +142,7 @@ async def general_http_exception_handler(request: Request, exc: StarletteHTTPExc
 ### VALIDATION EXCEPTION HANDLER
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    if request.url.path.startswith("/api"):
+    if request.url.path.startswith(settings.base_path + "/api"):
         return await request_validation_exception_handler(request, exc)
     
     return templates.TemplateResponse(

@@ -7,6 +7,7 @@ from sqlalchemy import delete, select, update
 
 import models
 from models import Base
+from config import settings
 from database import AsyncSessionLocal, engine
 from main import app
 
@@ -25,8 +26,8 @@ USERS = [
         "password": "Password1!",
     },
     {
-        "username": "Ñoño",
-        "email": "thanos@bunny.com",
+        "username": "Conejo",
+        "email": "conejo@test.com",
         "password": "Password1!",
         "image": "thanos-bunny.jpg",
     },
@@ -89,7 +90,7 @@ POSTS = [
     },
     {
         "title": "Life Is Like a Box of Chocolates",
-        "content": "Forrest Gump: \"Life is like a box of chocolates.\" Corny? Maybe. But this movie gets me every single time, no matter how many times I've seen it.",
+        "content": 'Forrest Gump: "Life is like a box of chocolates." Corny? Maybe. But this movie gets me every single time, no matter how many times I\'ve seen it.',
     },
     {
         "title": "The Desert of the Real",
@@ -161,7 +162,7 @@ POSTS = [
     },
     {
         "title": "Show Me the Money!",
-        "content": "Jerry Maguire and Rod Tidwell's back-and-forth: \"Show me the money!\" One of those phrases that escaped the movie entirely and became part of everyday vocabulary.",
+        "content": 'Jerry Maguire and Rod Tidwell\'s back-and-forth: "Show me the money!" One of those phrases that escaped the movie entirely and became part of everyday vocabulary.',
     },
     {
         "title": "There's No Place Like Home",
@@ -230,6 +231,8 @@ POST_44 = {
     "title": "Fun Fact: My High School Football Number Was #44",
     "content": "If you've paginated all the way to this post, the 44th one... you get to learn this fun fact: that my high school football number was #44. Other notable absolute legends who wore number #44 include: Jerry West (NBA - Also fellow WV Native), Hank Aaron (MLB), and Floyd Little (NFL).",
 }
+
+
 #
 #
 async def clear_existing_data() -> None:
@@ -240,6 +243,8 @@ async def clear_existing_data() -> None:
         await db.execute(delete(models.User))
         await db.commit()
     print("Cleared existing data")
+
+
 #
 #
 async def update_post_dates() -> None:
@@ -272,13 +277,15 @@ async def update_post_dates() -> None:
 
         await db.commit()
     print("Updated post dates")
+
+
 #
 #
 async def populate() -> None:
     # simular el startup del host para que funcione el populate aunque no haya corrido antes
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
     transport = httpx.ASGITransport(app=app)
 
     async with httpx.AsyncClient(
@@ -293,7 +300,7 @@ async def populate() -> None:
         print(f"\nCreating {len(USERS)} users...")
         for user_data in USERS:
             response = await client.post(
-                "/api/users",
+                f"{settings.base_path}/api/users",
                 json={
                     "username": user_data["username"],
                     "email": user_data["email"],
@@ -305,7 +312,7 @@ async def populate() -> None:
             print(f"  Created: {user['username']}")
 
             response = await client.post(
-                "/api/users/token",
+                f"{settings.base_path}/api/users/token",
                 data={
                     "username": user_data["email"],
                     "password": user_data["password"],
@@ -318,7 +325,7 @@ async def populate() -> None:
                 image_path = POPULATE_IMAGES_DIR / image_name
                 if image_path.exists():
                     response = await client.patch(
-                        f"/api/users/{user['id']}/picture",
+                        f"{settings.base_path}/api/users/{user['id']}/picture",
                         files={
                             "file": (
                                 image_name,
@@ -339,7 +346,7 @@ async def populate() -> None:
 
         # First create POST_44 (will become oldest after date update)
         response = await client.post(
-            "/api/posts",
+            f"{settings.base_path}/api/posts",
             json={"title": POST_44["title"], "content": POST_44["content"]},
             headers={"Authorization": f"Bearer {users[0]['token']}"},
         )
@@ -350,7 +357,7 @@ async def populate() -> None:
         for i, post_data in enumerate(reversed(POSTS)):
             user = users[i % len(users)]
             response = await client.post(
-                "/api/posts",
+                f"{settings.base_path}/api/posts",
                 json={
                     "title": post_data["title"],
                     "content": post_data["content"],
@@ -374,6 +381,7 @@ async def populate() -> None:
     print(f"  {len(USERS)} users")
     print(f"  {len(POSTS) + 1} posts")
     print("  Profile pictures saved locally")
+
 
 #
 #
