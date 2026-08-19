@@ -32,5 +32,5 @@ fi
 
 echo ""
 echo "Listo. API corriendo en:"
-echo "  http://localhost:8000/hero-blog"
-echo "  Docs (Swagger): http://localhost:8000/hero-blog/docs"
+echo "  http://localhost:8000"
+echo "  Docs (Swagger): http://localhost:8000/docs"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PROJECT_ID="fastapi-blog-504020"
+PROJECT_ID="master-config-506002"
 REGION="us-east4"
 SERVICE="fastapi-service"
 IMAGE="us-east4-docker.pkg.dev/${PROJECT_ID}/fastapi-repo/fastapi-app"
