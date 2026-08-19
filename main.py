@@ -9,6 +9,7 @@ from fastapi.exception_handlers import (
 
 from fastapi import FastAPI, Depends, HTTPException, status, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import select, func, text
@@ -207,6 +208,18 @@ async def home(request: Request, db: Annotated[AsyncSession, Depends(get_db)]):
 
 #
 #
+### BARE PROJECT PATH (e.g. "/hero-blog" without trailing slash)
+### Explicit route + relative redirect, so we don't depend on Starlette's
+### automatic slash-redirect (which built the wrong host behind the proxy).
+if settings.project_name:
+
+    @app.get(settings.project_name, include_in_schema=False)
+    async def bare_path_redirect():
+        return RedirectResponse(url=settings.project_name + "/")
+
+
+#
+#
 ### LOGIN
 @app.get(settings.project_name + "/login", include_in_schema=False)
 async def login_page(request: Request):
@@ -280,6 +293,29 @@ async def health_check(db: Annotated[AsyncSession, Depends(get_db)]):
             detail="Database unavailable",
         ) from exc
     return {"status": "healthy"}
+
+
+#
+#
+### TRUSTED FORWARDED HOST
+### uvicorn's --proxy-headers only trusts X-Forwarded-Proto/-For, not
+### X-Forwarded-Host, so url_for() was building links with Cloud Run's raw
+### hostname instead of the public domain. Only rewrite Host when the
+### forwarded value matches an allowlisted domain — trusting it blindly
+### would let anyone hitting the raw Cloud Run URL spoof it and get the app
+### to generate links (e.g. password reset) pointing at their own host.
+TRUSTED_FORWARDED_HOSTS = {"victormarcias.online"}
+
+
+@app.middleware("http")
+async def trust_forwarded_host(request: Request, call_next):
+    forwarded_host = request.headers.get("x-forwarded-host")
+    if forwarded_host in TRUSTED_FORWARDED_HOSTS:
+        request.scope["headers"] = [
+            (b"host", forwarded_host.encode()) if k == b"host" else (k, v)
+            for k, v in request.scope["headers"]
+        ]
+    return await call_next(request)
 
 
 #
