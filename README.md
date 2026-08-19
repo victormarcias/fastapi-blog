@@ -28,10 +28,10 @@ Live at: https://victormarcias.online/hero-blog
 ### Local development
 
 ```bash
-./run_project_dev.sh              # build, start containers, run migrations
-./run_project_dev.sh --test        # ...and run the test suite
-./run_project_dev.sh --populate    # ...and seed the DB with demo data
-./run_project_dev.sh --test --populate
+./run-project-dev.sh              # build, start containers, run migrations
+./run-project-dev.sh --test        # ...and run the test suite
+./run-project-dev.sh --populate    # ...and seed the DB with demo data
+./run-project-dev.sh --test --populate
 ```
 
 App runs at `http://localhost:8000/hero-blog`, docs at `http://localhost:8000/hero-blog/docs`.
@@ -41,7 +41,7 @@ Uses a local Postgres container (`bloguser`/`blogpass`) — no external dependen
 ### Tests only
 
 ```bash
-./run_tests.sh
+./run-tests.sh
 ```
 
 Runs against an isolated local `test_blog` database.
@@ -49,8 +49,8 @@ Runs against an isolated local `test_blog` database.
 ### Deploy to production
 
 ```bash
-./run_project_prod.sh              # test, build, migrate Neon, deploy to Cloud Run
-./run_project_prod.sh --populate   # ...and seed prod with demo data
+./run-project-prod.sh              # test, build, migrate Neon, deploy to Cloud Run
+./run-project-prod.sh --populate   # ...and seed prod with demo data
 ```
 
 Requires a clean working tree in sync with `origin/main`, and the `gcloud` CLI authenticated. Runs tests and builds the image in Cloud Build (`cloudbuild.yaml`, own ephemeral Postgres — no local Docker needed), pushes it to Artifact Registry, runs migrations against the production Neon database, then deploys to Cloud Run.

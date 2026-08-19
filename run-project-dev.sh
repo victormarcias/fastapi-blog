@@ -22,7 +22,7 @@ echo "Aplicando migraciones..."
 docker compose exec -T app alembic upgrade head
 
 if [ "$RUN_TESTS" = true ]; then
-  ./run_tests.sh
+  ./run-tests.sh
 fi
 
 if [ "$RUN_POPULATE" = true ]; then
