@@ -3,8 +3,6 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.orm import DeclarativeBase
 from config import settings
 
-# SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./blog.db"
-
 ### DATABASE __INIT__
 engine = create_async_engine(settings.database_url, pool_pre_ping=True)
 
